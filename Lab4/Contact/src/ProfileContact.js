@@ -1,11 +1,29 @@
-import { StyleSheet, View, Text, Alert, Button } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import ContactThum from './ContactThum';
-import DetailListIt from './DetailListItem';
-import { IconButton, } from 'react-native-paper';
+import DetailListItem from './DetailListItem';
+import { IconButton } from 'react-native-paper';
+import { updateContact } from './asyncStorageHelper';
 
-const ProfileContact = ({ route }) => {
+const ProfileContact = ({ route, navigation }) => {
     const { contact } = route.params;
-    const { id, avatar, name, email, phone, cell, favorite } = contact;
+    const { id, avatar, name, email, phone, cell } = contact;
+    const [favorite, setFavorite] = useState(contact.favorite);
+
+    const toggleFavorite = async () => {
+        const newFavorite = !favorite;
+        setFavorite(newFavorite);
+
+        const updatedContact = { ...contact, favorite: newFavorite };
+        const success = await updateContact(updatedContact);
+
+        if (success) {
+            console.log('Contact updated successfully');
+        } else {
+            setFavorite(!newFavorite);
+            console.error('Failed to update contact');
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -13,43 +31,39 @@ const ProfileContact = ({ route }) => {
                 <ContactThum avatar={avatar} name={name} phone={phone} />
             </View>
             <View style={styles.detailsSection}>
-                <DetailListIt icon="mail" title="Email" subtitle={email} />
-                <DetailListIt icon="phone" title="Work" subtitle={phone} />
-                <DetailListIt icon="smartphone" title="Personal" subtitle={cell} />
-                <View style={{ alignItems: 'center' }}>
+                <DetailListItem icon="mail" title="Email" subtitle={email} />
+                <DetailListItem icon="phone" title="Work" subtitle={phone} />
+                <DetailListItem icon="smartphone" title="Personal" subtitle={cell} />
+                <View style={styles.favoriteSection}>
                     <IconButton
-                        icon={favorite == true ? "star-check" : "star-check-outline"}
+                        icon={favorite ? "star-check" : "star-check-outline"}
                         iconColor="#663399"
-
                         size={20}
-                        onPress={() => {
-                            // updateFavorite();
-                        }}
+                        onPress={toggleFavorite}
                     />
                 </View>
             </View>
         </View>
-
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-
-        avatarSection: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'blue',
-
-            detailsSection: {
-                flex: 1,
-                backgroundColor: 'white',
-
-            },
-
-        },
-
+    },
+    avatarSection: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'blue',
+    },
+    detailsSection: {
+        flex: 1,
+        backgroundColor: 'white',
+    },
+    favoriteSection: {
+        alignItems: 'center',
     },
 });
+
 export default ProfileContact;

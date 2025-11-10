@@ -5,7 +5,7 @@ import { StyleSheet, View, TouchableOpacity, Image, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
 
-const ContactThum = ({ name, phone, avatar, textColor, onPress }) => {
+const ContactThum = ({ name, phone, avatar, textColor, onPress, showPhone }) => {
     const colorStyle = {
         color: textColor,
     }
@@ -25,12 +25,7 @@ const ContactThum = ({ name, phone, avatar, textColor, onPress }) => {
 
             {name !== '' && <Text style={[styles.name, colorStyle]}>{name}</Text>}
 
-            {phone !== '' && (
-                <View style={styles.phoneSection}>
-                    <Icon name='phone' size={16} style={{ color: textColor }} />
-                    <Text style={[styles.phone, colorStyle]}>{phone}</Text>
-                </View>
-            )}
+
         </View>
 
     )
@@ -44,12 +39,14 @@ ContactThum.propTypes = {
     avatar: PropTypes.string,
     phone: PropTypes.string,
     onPress: PropTypes.func,
+    showPhone: PropTypes.bool,
 }
 ContactThum.defaultProps = {
     name: '',
     phone: '',
     textColor: 'white',
     onPress: null,
+    showPhone: true,
 }
 const styles = StyleSheet.create({
     container: {
